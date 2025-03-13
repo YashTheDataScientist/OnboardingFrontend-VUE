@@ -1,103 +1,230 @@
 <template>
-    <div class="home-page">
-      <div class="left-panel">
-        <!-- 紫外线指数内容 -->
-        <div class="uv-section">
-            <img 
-            src="/images/search-header.png" 
-            class="header-image"
-            alt="Sun Safety Header"
+  <div class="home-page">
+    <div class="left-panel">
+      <img 
+        src="/images/search-header.png" 
+        class="header-image"
+        alt="Sun Safety Header"
+      >
+      
+      <div class="category extreme">
+        <h2>Search your suburb</h2>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Enter the suburb..."
+          class="search-input"
+        >
+        <button 
+          class="search-btn"
+          @click="fetchUVData"
+          :disabled="isLoading"
+        >
+          {{ isLoading ? 'Loading...' : 'SEARCH' }}
+        </button>
+      </div>
+
+      <div v-if="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div class="uv-results" v-if="uvData">
+        <div class="current-uv">
+          <h3>Current UV Index</h3>
+          <div class="uvi-value">{{ uvData.now.uvi }}</div>
+          <div class="status">{{ getUVStatus(uvData.now.uvi) }}</div>
+        </div>
+
+        <div class="forecast">
+          <h3>24h Forecast</h3>
+          <div class="forecast-items">
+            <div 
+              v-for="(item, index) in uvData.forecast" 
+              :key="index"
+              class="forecast-item"
             >
-            <div class="category extreme">
-            <h2>Search your suburd</h2>
-            <input 
-              type="text" 
-              placeholder="Enter the suburb..."
-              class="search-input"
-            >
-            <button class="search-btn">SEARCH</button>
+              <div class="time">{{ formatTime(item.time) }}</div>
+              <div class="uvi">{{ item.uvi }}</div>
+            </div>
           </div>
         </div>
-  
-        <!-- 底部导航 -->
-        <nav class="side-nav">
-          <router-link to="/personalise" class="nav-btn">
-            PERSONALISE YOUR RECOMMENDATIONS
-          </router-link>
-          <router-link to="/remind" class="nav-btn">
-            SET REMINDER
-          </router-link>
-          <router-link to="/plan" class="nav-btn">
-            PLAN YOUR TRIP SAFELY
-          </router-link>
-        </nav>
-        <img
-        src="/images/safety-tips.png"
-        class="right-image"
-        alt="Safety Tips"
-      >
       </div>
-    </div>
-  </template>
 
-<!-- HomePage.vue 的 style 部分 -->
+      <nav class="side-nav">
+        <router-link to="/personalise" class="nav-btn">
+          PERSONALISE YOUR RECOMMENDATIONS
+        </router-link>
+        <router-link to="/remind" class="nav-btn">
+          SET REMINDER
+        </router-link>
+        <router-link to="/plan" class="nav-btn">
+          PLAN YOUR TRIP SAFELY
+        </router-link>
+      </nav>
+    </div>
+
+    <img
+      src="/images/safety-tips.png"
+      class="right-image"
+      alt="Safety Tips"
+    >
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import axios from 'axios'
+
+interface UVData {
+  now: {
+    time: string
+    uvi: number
+  }
+  forecast: Array<{
+    time: string
+    uvi: number
+  }>
+}
+
+const isLoading = ref(false)
+const searchQuery = ref('')
+const uvData = ref<UVData | null>(null)
+const error = ref<string | null>(null)
+
+const GEO_API_KEY = 'c94f534d862d49c79d34ba0df24dc632'
+const UV_API_KEY = 'openuv-c10rrm86m6so7-io'
+
+const fetchUVData = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    uvData.value = null
+
+    const geoResponse = await axios.get('https://api.geoapify.com/v1/geocode/search', {
+      params: {
+        text: searchQuery.value,
+        apiKey: GEO_API_KEY
+      }
+    })
+
+    if (!geoResponse.data.features || geoResponse.data.features.length === 0) {
+      error.value = 'Suburb not found. Please enter a valid suburb.'
+      return
+    }
+
+    const [lng, lat] = geoResponse.data.features[0].geometry.coordinates
+
+    const uvResponse = await axios.get('https://api.openuv.io/api/v1/uv', {
+      headers: {
+        'x-access-token': 'openuv-c10rrm86m6so7-io',
+        'Content-Type': 'application/json'
+      },
+      params: { lat, lng }
+    })
+
+    console.log('UV Response:', uvResponse.data) // 调试用
+
+    uvData.value = {
+      now: {
+        time: uvResponse.data.result.uv_time,
+        uvi: uvResponse.data.result.uv
+      },
+      forecast: (uvResponse.data.result.uv_forecast || []).map(item => ({
+        time: item.uv_time,
+        uvi: item.uv
+      }))
+    }
+
+  } catch (err) {
+    console.error(err)
+    error.value = 'Failed to fetch UV data. Please try again later.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const getUVStatus = (uvi: number) => {
+  if (uvi < 3) return 'Low'
+  if (uvi < 6) return 'Moderate'
+  if (uvi < 8) return 'High'
+  if (uvi < 11) return 'Very High'
+  return 'Extreme'
+}
+
+const formatTime = (timestamp: string) => {
+  return new Date(timestamp).toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  })
+}
+
+</script>
+
+
+
 <style scoped>
 .home-page {
-  background: #e0e4e9; /* 深蓝底色 */
+  display: flex;
+  background: #e0e4e9;
   min-height: 100vh;
   padding: 2rem;
 }
 
 .left-panel {
-  width: 320px; /* 左侧固定宽度 */
-  margin-right: auto; /* 保持左侧定位 */
+  width: 320px;
+  position: relative;
+  z-index: 20;
 }
 
-.title {
-  color: rgb(54, 156, 174);
-  font-size: 1.8rem;
+.header-image {
+  width: 100%;
   margin-bottom: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* 紫外线分类区块 */
 .category {
-  background: rgba(255,255,255,0.1);
+  background: white;
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.category h2 {
-  color: rgb(10, 74, 65);
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-}
-
-.values {
-  color: #14171c;
-  font-size: 0.9rem;
-}
-
-/* 搜索框样式 */
 .search-input {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #7b90b0;
-  border-radius: 4px;
-  background: #eef0f3;
-  color: white;
+  padding: 0.8rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
   margin: 0.5rem 0;
 }
 
 .search-btn {
   width: 100%;
-  padding: 0.6rem;
-  background: #4299e1; /* 亮蓝色按钮 */
-  color: rgb(21, 6, 6);
+  padding: 0.8rem;
+  background: #4299e1;
+  color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: opacity 0.2s;
 }
+
+.search-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.right-image {
+  position: fixed;
+  left: 400px;
+  top: 2rem;
+  width: 600px;
+  height: 80vh;
+  border-radius: 12px;
+  box-shadow: 4px 4px 20px rgba(0,0,0,0.1);
+}
+
 
 /* 导航按钮 */
 .side-nav {
