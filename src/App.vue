@@ -2,6 +2,11 @@
 <template>
   <div class="app-container">
     <header class="global-header">
+      <img 
+        src="/images/logo.png" 
+        class="header-logo"
+        alt="Sun Safety Logo"
+      >
       <router-link 
         to="/" 
         class="home-link"
@@ -29,6 +34,15 @@
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.header-logo {
+  height: 40px; /* 根据实际图片比例调整 */
+  margin-right: 1.0rem;
+  transition: transform 0.3s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.05);
 }
 .global-header {
   position: fixed;
