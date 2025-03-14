@@ -215,14 +215,16 @@ const formatTime = (timestamp: string) => {
   cursor: not-allowed;
 }
 
+
 .right-image {
   position: fixed;
-  left: 400px;
+  left: 400px; 
   top: 2rem;
   width: 600px;
   height: 80vh;
   border-radius: 12px;
   box-shadow: 4px 4px 20px rgba(0,0,0,0.1);
+  z-index: 10;
 }
 
 
