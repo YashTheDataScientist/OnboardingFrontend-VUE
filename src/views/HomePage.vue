@@ -192,7 +192,7 @@ const formatTime = (timestamp: string) => {
 }
 
 .search-input {
-  width: 100%;
+  width: 90%;
   padding: 0.8rem;
   border: 1px solid #cbd5e0;
   border-radius: 6px;
