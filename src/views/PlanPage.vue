@@ -9,7 +9,7 @@
         <input
           type="text"
           v-model="form.startPoint"
-          placeholder="Enter postcode..."
+          placeholder="Enter "
           class="form-input"
         >
       </div>
@@ -20,7 +20,7 @@
         <input
           type="text"
           v-model="form.destination"
-          placeholder="Enter postcode..."
+          placeholder="Enter "
           class="form-input"
         >
       </div>

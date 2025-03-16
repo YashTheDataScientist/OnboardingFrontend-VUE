@@ -228,7 +228,7 @@ const formatTime = (timestamp: string) => {
 }
 
 
-/* 导航按钮 */
+
 .side-nav {
   margin-top: 2rem;
 }
@@ -238,7 +238,7 @@ const formatTime = (timestamp: string) => {
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 0.8rem;
-  background: #758fbc; /* 深灰蓝色 */
+  background: #758fbc; 
   color: white !important;
   text-decoration: none;
   border-radius: 6px;
@@ -247,17 +247,17 @@ const formatTime = (timestamp: string) => {
 }
 
 .nav-btn:hover {
-  background: #4299e1; /* 悬停亮蓝色 */
+  background: #4299e1; 
   transform: translateX(5px);
 }
 
-/* 当前激活按钮样式 */
+
 .router-link-active.nav-btn {
   background: #4299e1;
   box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
 }
 
-/* 在原有样式后追加 */
+
 .header-image {
   width: 100%;
   margin-bottom: 1.5rem;
@@ -268,17 +268,13 @@ const formatTime = (timestamp: string) => {
 .right-image {
   position: fixed;
   left: 720px; /* 左侧面板宽度320px + 40px间距 */
-  top: 2rem;
+  top: 5rem;
   width: 600px;
-  max-height: 90vh;
+  max-height: 25vh;
   border-radius: 12px;
   box-shadow: 4px 4px 20px rgba(0,0,0,0.15);
   z-index: 10;
 }
 
-/* 调整左侧面板避免重叠 */
-.left-panel {
-  position: relative; /* 确保右侧图片定位基准 */
-  z-index: 20; /* 保持左侧内容在前 */
-}
+
 </style>
