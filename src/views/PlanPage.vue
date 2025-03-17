@@ -3,7 +3,7 @@
     <h1 class="page-title">PLAN AHEAD, PROTECT YOUR SKIN</h1>
     
     <div class="plan-form">
-      <!-- 起始点 -->
+ 
       <div class="form-group">
         <label>Enter Starting (CITY/COUNTRY)</label>
         <input
@@ -14,7 +14,6 @@
         >
       </div>
 
-      <!-- 目的地 -->
       <div class="form-group">
         <label>Enter Destination(CITY/COUNTRY)</label>
         <input
@@ -25,9 +24,9 @@
         >
       </div>
 
-      <!-- 日期时间 -->
+   
       <div class="datetime-group">
-        <!-- 日期选择 -->
+
         <div class="form-group">
           <label>Choose Date</label>
           <input
@@ -38,7 +37,7 @@
           >
         </div>
 
-        <!-- 时间选择 -->
+     
         <div class="form-group">
           <label>Choose Time</label>
           <div class="time-input-group">
@@ -93,7 +92,6 @@
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
 
-// 注册Chart.js组件
 Chart.register(...registerables)
 
 const chart = ref<Chart>()

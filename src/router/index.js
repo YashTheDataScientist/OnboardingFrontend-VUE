@@ -24,6 +24,12 @@ const routes = [
     name: 'plan',
     component: () => import('@/views/PlanPage.vue'),
     meta: { buttonClass: 'very-high' }
+  },
+  // ✅ Add the test route
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('@/views/TestVue.vue')
   }
 ]
 

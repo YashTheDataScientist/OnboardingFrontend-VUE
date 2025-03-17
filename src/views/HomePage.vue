@@ -29,10 +29,10 @@
       </div>
 
       <div class="uv-results" v-if="uvData">
-        <div class="current-uv">
+        <div class="current-uv" :style="{ backgroundColor: getUVStatus(uvData.now.uvi).color }">
           <h3>Current UV Index</h3>
           <div class="uvi-value">{{ uvData.now.uvi }}</div>
-          <div class="status">{{ getUVStatus(uvData.now.uvi) }}</div>
+          <div class="status">{{ getUVStatus(uvData.now.uvi).status }}</div>
         </div>
 
         <div class="forecast">
@@ -49,7 +49,10 @@
           </div>
         </div>
       </div>
-
+      <div>
+        <h2>Sun Safety and Cancer Trends</h2>
+        <CancerTrendsChart />
+      </div>
       <nav class="side-nav">
         <router-link to="/personalise" class="nav-btn">
           PERSONALISE YOUR RECOMMENDATIONS
@@ -68,12 +71,39 @@
       class="right-image"
       alt="Safety Tips"
     >
+    <section class="recommendation-section">
+    <h2 class="section-title">RECOMMENDATION</h2>
+    <div class="recommendation-container">
+      <div class="recommendation-card">
+        <h3>ALL YOU NEED TO KNOW ABOUT SUNSCREEN</h3>
+        <img :src="'/images/sunscreen.png'" alt="Sunscreen Recommendations">
+        <button class="btn-read-more" @click="fetchRecommendations">Read More</button>
+      </div>
+
+      <div class="recommendation-card">
+        <h3>WHAT TO WEAR THIS SUMMER</h3>
+        <img :src="'/images/wear.png'" alt="What to Wear Recommendations">
+        <button class="btn-read-more" @click="fetchRecommendations">Read More</button>
+      </div>
+    </div>
+
+  
+    <div v-if="products.length" class="recommended-products">
+      <h4>Recommended Products:</h4>
+      <ul>
+        <li v-for="product in products" :key="product.product_id">
+          {{ product.product_name }}
+        </li>
+      </ul>
+    </div>
+  </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+
 
 interface UVData {
   now: {
@@ -85,10 +115,31 @@ interface UVData {
     uvi: number
   }>
 }
+interface Product {
+  product_id: number
+  product_name: string
+}
+const products = ref<Product[]>([])
+
+const fetchRecommendations = async () => {
+  try {
+    const response = await axios.get('https://443a5sxzx7.execute-api.ap-southeast-2.amazonaws.com/test/get_db')
+
+    if (response.status === 200) {
+      const responseBody = JSON.parse(response.data.body)
+      products.value = responseBody
+    } else {
+      alert('Failed to fetch recommendations')
+    }
+  } catch (error) {
+    console.error('API request error:', error)
+    alert('Failed to fetch recommendations')
+  }
+}
 
 const isLoading = ref(false)
 const searchQuery = ref('')
-const uvData = ref<UVData | null>(null)
+//const uvData = ref<UVData | null>(null)
 const error = ref<string | null>(null)
 
 const GEO_API_KEY = 'c94f534d862d49c79d34ba0df24dc632'
@@ -144,12 +195,19 @@ const fetchUVData = async () => {
 }
 
 const getUVStatus = (uvi: number) => {
-  if (uvi < 3) return 'Low'
-  if (uvi < 6) return 'Moderate'
-  if (uvi < 8) return 'High'
-  if (uvi < 11) return 'Very High'
-  return 'Extreme'
+  if (uvi < 3) return { status: 'Low', color: '#8BC34A' } // green
+  if (uvi < 6) return { text: 'Moderate', color: '#FBD44E' } // 黄色
+  if (uvi < 8) return { status: 'High', color: '#F2994A' } // 橙色
+  if (uvi < 11) return { status: 'Very High', color: '#EB5757' } // 深橙色
+  return { status: 'Extreme', color: '#C0392B' } // 红色
 }
+
+const uvData = ref({
+  now: {
+    time: '',
+    uvi: 0
+  }
+})
 
 const formatTime = (timestamp: string) => {
   return new Date(timestamp).toLocaleTimeString([], { 
@@ -158,16 +216,31 @@ const formatTime = (timestamp: string) => {
   })
 }
 
+
+import CancerTrendsChart from "@/components/CancerTrendsChart.vue";
+
 </script>
 
 
 
 <style scoped>
 .home-page {
+  background-image: url('/images/background.png');
+  background-repeat: no-repeat; 
+  background-position: center; 
+  background-size: cover;
   display: flex;
-  background: #e0e4e9;
-  min-height: 100vh;
-  padding: 2rem;
+  flex-direction: column;
+  align-items: flex-start; 
+  padding-bottom: 2rem;
+  padding-left: 2rem; 
+}
+.current-uv {
+  padding: 1rem;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  margin-top: 1rem;
 }
 
 .left-panel {
@@ -194,7 +267,7 @@ const formatTime = (timestamp: string) => {
 .search-input {
   width: 90%;
   padding: 0.8rem;
-  border: 1px solid #cbd5e0;
+  border: 1px solid #e0e6ec;
   border-radius: 6px;
   margin: 0.5rem 0;
 }
@@ -275,6 +348,85 @@ const formatTime = (timestamp: string) => {
   box-shadow: 4px 4px 20px rgba(0,0,0,0.15);
   z-index: 10;
 }
+.recommendation-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 3rem;
+  text-align: center;
+}
 
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+.recommendation-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+}
+
+.recommendation-card {
+  background: #e2ecf9;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 45%;
+}
+
+.recommendation-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-read-more {
+  background: #3c4f76;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-read-more:hover {
+  background: #2a69ac;
+}
+
+@media (max-width: 768px) {
+  .recommendation-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .recommendation-card {
+    width: 90%;
+    margin-bottom: 2rem;
+  }
+}
+
+.recommended-products {
+  margin-top: 2rem;
+  background-color: #f0f7ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.recommended-products ul {
+  list-style: none;
+  padding: 0;
+}
+
+.recommended-products li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.recommended-products li:last-child {
+  border-bottom: none;
+}
 
 </style>

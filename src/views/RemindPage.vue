@@ -70,7 +70,7 @@ const isFormValid = computed(() => {
 const setReminder = () => {
   if (!isFormValid.value) return
   
-  // 转换为24小时制
+
   const [hours, minutes] = reminderData.value.time.split(':')
   let hours24 = parseInt(hours)
   if (reminderData.value.period === 'PM' && hours24 < 12) {
@@ -81,18 +81,22 @@ const setReminder = () => {
 
   const reminderConfig = {
     time: `${String(hours24).padStart(2, '0')}:${minutes}`,
-    interval: reminderData.value.interval * 60 * 60 * 1000 // 转换为毫秒
+    interval: reminderData.value.interval * 60 * 60 * 1000 
   }
 
   console.log('Reminder set:', reminderConfig)
-  // TODO: 实际设置提醒逻辑
+
   alert('Reminder set successfully!')
 }
 </script>
 
 <style scoped>
 .remind-page {
-  max-width: 500px;
+  background-image: url('/images/background.png');
+  background-repeat: no-repeat; 
+  background-position: center; 
+  background-size: cover;
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 20px;
 }

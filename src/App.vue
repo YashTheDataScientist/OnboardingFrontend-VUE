@@ -17,7 +17,7 @@
       <h1 class="app-title">Sun Safety Guard</h1>
     </header>
 
-    <!-- 合并后的正确路由视图 -->
+
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />

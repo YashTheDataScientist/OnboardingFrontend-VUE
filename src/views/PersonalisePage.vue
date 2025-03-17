@@ -3,7 +3,7 @@
     <h1>PERSONALISE YOUR RECOMMENDATION</h1>
     
     <div class="form-container">
-      <!-- 年龄输入 -->
+
       <div class="form-group">
         <label>Age:</label>
         <input 
@@ -16,7 +16,7 @@
         >
       </div>
 
-      <!-- 肤色选择 -->
+
       <div class="form-group">
         <label>Skin Color:</label>
         <div class="radio-group">
@@ -39,7 +39,6 @@
         </div>
       </div>
 
-      <!-- 性别选择 -->
       <div class="form-group">
         <label>Gender:</label>
         <div class="radio-group">
@@ -58,7 +57,6 @@
         </div>
       </div>
 
-      <!-- 操作按钮 -->
       <div class="button-group">
         <button 
           class="btn reset-btn"
@@ -75,19 +73,31 @@
       </div>
     </div>
   </div>
+  <div v-if="showAdvice" class="advice-section">
+  <h2>Your Personalised Sunscreen Advice</h2>
+  <ul>
+    <li v-for="advice in adviceList" :key="advice">{{ advice }}</li>
+  </ul>
+
+  <div class="advice-images">
+    <img src="/images/sinkyear.png" alt="Skin protection this year">
+    <img src="/images/skintrend.png" alt="Skin care trends">
+    <img src="/images/uvheatmap.png" alt="UV heatmap">
+  </div>
+</div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// 表单数据类型
+
 interface FormData {
   age: number | null
   skinColor: string
   gender: string
 }
 
-// 肤色选项
+
 const skinColors = [
   { value: 'fair', label: 'Fair', code: '#FFE4C4' },
   { value: 'medium', label: 'Medium', code: '#D2B48C' },
@@ -95,34 +105,70 @@ const skinColors = [
   { value: 'dark', label: 'Dark', code: '#704214' }
 ]
 
-// 性别选项
+
 const genders = [
   { value: 'male', label: 'Male' },
   { value: 'female', label: 'Female' },
   { value: 'other', label: 'Other' }
 ]
 
-// 响应式数据
+
 const formData = ref<FormData>({
   age: null,
   skinColor: 'medium',
   gender: 'other'
 })
 
-// 提交表单
+
+
+
+
+
+const showAdvice = ref(false)
+
+const adviceList = ref<string[]>([])
+
 const submitForm = () => {
+  showAdvice.value = true
+
+  adviceList.value = [] 
+  if (formData.value.age && formData.value.age < 12) {
+    adviceList.value.push("Children should use SPF 50+ sunscreen.")
+  } else if (formData.value.age && formData.value.age < 60) {
+    adviceList.value.push("Use sunscreen SPF 30+ daily, re-apply every 2 hours.")
+  } else {
+    adviceList.value.push("Older adults should use higher SPF and frequent reapplication.")
+  }
+
+  if (formData.value.skinColor === 'fair') {
+    adviceList.value.push("Fair skin burns easily, use high SPF products (SPF 50+).")
+  } else if (formData.value.skinColor === 'dark') {
+    adviceList.value.push("Dark skin requires SPF protection of at least 15-30 SPF.")
+  } else {
+    adviceList.value.push("Medium and Olive skin tones should apply SPF 30+ regularly.")
+  }
+
+  if (formData.value.gender === 'female') {
+    adviceList.value.push("Consider using sunscreen that doubles as moisturizer.")
+  } else if (formData.value.gender === 'male') {
+    adviceList.value.push("Consider sweat-resistant sunscreen for active lifestyle.")
+  } else {
+    adviceList.value.push("Choose sunscreen suitable for sensitive skin.")
+  }
+
   console.log('Submitted:', formData.value)
-  // TODO: 提交到API
 }
 
-// 重置表单
 const resetForm = () => {
   formData.value = {
     age: null,
     skinColor: 'medium',
     gender: 'other'
   }
+  showAdvice.value = false
+  adviceList.value = []
 }
+
 </script>
 
 <style scoped>
@@ -226,4 +272,37 @@ input[type="radio"] {
 .btn:hover {
   opacity: 0.9;
 }
+.advice-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.advice-section h2 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.advice-section ul {
+  list-style: disc;
+  padding-left: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.advice-images {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.advice-images img {
+  max-width: 30%;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
 </style>
