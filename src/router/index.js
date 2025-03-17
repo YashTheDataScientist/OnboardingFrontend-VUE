@@ -26,11 +26,11 @@ const routes = [
     meta: { buttonClass: 'very-high' }
   },
   // ✅ Add the test route
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('@/views/TestVue.vue')
-  }
+  // {
+  //   path: '/test',
+  //   name: 'test',
+  //   component: () => import('@/views/TestVue.vue')
+  // }
 ]
 
 const router = createRouter({
