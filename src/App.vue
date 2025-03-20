@@ -6,8 +6,8 @@
         <h1 class="site-title">SPF Society</h1>
       </div>
       <ul>
-        <li><router-link to="/" class="nav-link">Home</router-link></li>
-        <li><router-link to="/recommendations" class="nav-link">Sun Safety Tips</router-link></li>
+        <li><router-link to="/home" class="nav-link">Home</router-link></li>
+        <li><router-link to="/safety" class="nav-link">Sun Safety Tips</router-link></li>
         <li><router-link to="/reminders" class="nav-link">Sunscreen Alerts</router-link></li>
         <li><router-link to="/plan" class="nav-link">UV Travel Guide</router-link></li>
         <li><router-link to="/about" class="nav-link">About Us</router-link></li>
@@ -66,7 +66,7 @@ html, body {
 }
 
 .site-title {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
   color: white;
   margin: 0;
@@ -84,7 +84,7 @@ html, body {
 }
 
 .nav-link {
-  font-size: 14px;
+  font-size: 20px;
   text-decoration: none;
   color: white;
   position: relative;

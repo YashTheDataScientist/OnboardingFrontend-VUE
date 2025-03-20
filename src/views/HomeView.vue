@@ -7,7 +7,7 @@
           <!-- Search Box -->
           <div class="search-box">
             <input type="text" v-model="location" placeholder="Enter Suburb/Postcode" />
-            <button @click="fetchUVData">GO</button>
+            <button @click="fetchLocation">GO</button>
           </div>
           <p class="location-text">{{ city }}</p>
 
@@ -33,14 +33,24 @@
       <!-- Right Section -->
       <div class="right-section">
         <p>Learn more about how UV exposure affects your skin and health.</p>
-        <button class="explore-btn">Explore Visualizations</button>
+        <button class="explore-btn" @click="scrollToVisualizations">Explore Visualizations</button>
       </div>
     </div>
+  </div>
+
+  <!-- Visualizations Section -->
+  <div id="visualizations-section">
+    <Visualizations />
   </div>
 </template>
 
 <script>
+import Visualizations from "@/views/Vizualisations.vue"; // Ensure correct path
+
 export default {
+  components: {
+    Visualizations
+  },
   data() {
     return {
       location: "",
@@ -58,7 +68,7 @@ export default {
       return new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
     },
     displayUVIndex() {
-      return this.uvIndex !== null ? this.uvIndex : "--"; // ✅ Ensures it never disappears
+      return this.uvIndex !== null ? this.uvIndex : "--";
     },
     backgroundStyle() {
       let bgImage = "/images/sunny-sky.jpg";
@@ -81,13 +91,44 @@ export default {
     }
   },
   methods: {
-    async fetchUVData() {
-      if (!this.lat || !this.lon) {
-        this.lat = this.defaultLocation.lat;
-        this.lon = this.defaultLocation.lon;
-        this.city = this.defaultLocation.city;
+    async fetchLocation() {
+      if (!this.location) {
+        alert("Please enter a suburb or postcode!");
+        return;
       }
 
+      const isNumber = /^\d+$/.test(this.location);
+      const requestBody = isNumber ? { postcode: Number(this.location) } : { locality: this.location };
+
+      try {
+        // Fetch latitude & longitude from backend API
+        const locationResponse = await fetch("https://eqysflxgv2.execute-api.ap-southeast-2.amazonaws.com/prod/get-location", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody),
+        });
+
+        const locationResult = await locationResponse.json();
+
+        if (!locationResult.lat || !locationResult.long) {
+          alert("Invalid location. Please try again.");
+          return;
+        }
+
+        // Update location data
+        this.lat = locationResult.lat;
+        this.lon = locationResult.long;
+        this.city = this.location.charAt(0).toUpperCase() + this.location.slice(1); // Capitalize first letter
+
+        // Fetch UV Index using updated coordinates
+        this.fetchUVData();
+      } catch (error) {
+        console.error("Error fetching location:", error);
+        alert("Error fetching location data. Please try again.");
+      }
+    },
+
+    async fetchUVData() {
       let url = `https://currentuvindex.com/api/v1/uvi?latitude=${this.lat}&longitude=${this.lon}`;
 
       try {
@@ -110,6 +151,7 @@ export default {
         this.uvIndex = 1;
       }
     },
+
     getRiskLevel(uv) {
       if (uv <= 2) return "Low UV Risk";
       if (uv <= 5) return "Moderate UV Risk";
@@ -117,22 +159,34 @@ export default {
       if (uv <= 10) return "Very High UV Risk";
       return "Extreme UV Risk";
     },
+
     uvColor(uv) {
       if (uv <= 2) return "blue";
       if (uv <= 5) return "yellow";
       if (uv <= 7) return "orange";
       return "red";
     },
+
+    scrollToVisualizations() {
+      const section = document.getElementById("visualizations-section");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" });
+      }
+    },
+
     getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          position => {
+          (position) => {
+            // Got user location, fetch UV data
             this.lat = position.coords.latitude;
             this.lon = position.coords.longitude;
-            this.city = "Current Location";
+            this.city = "Current Location: Clayton, VIC";
             this.fetchUVData();
           },
           () => {
+            // Permission denied, use default (Clayton)
+            console.warn("Geolocation denied. Using default location.");
             this.lat = this.defaultLocation.lat;
             this.lon = this.defaultLocation.lon;
             this.city = this.defaultLocation.city;
@@ -140,6 +194,8 @@ export default {
           }
         );
       } else {
+        // Geolocation not supported, use default
+        console.warn("Geolocation not supported. Using default location.");
         this.lat = this.defaultLocation.lat;
         this.lon = this.defaultLocation.lon;
         this.city = this.defaultLocation.city;
@@ -148,10 +204,11 @@ export default {
     }
   },
   mounted() {
-    this.getLocation();
+    this.getLocation(); // Ask for location on page load
   }
 };
 </script>
+
 
 <style>@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -225,6 +282,7 @@ html, body {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  margin-bottom: 30px;
 }
 
 .search-box input {
@@ -355,6 +413,10 @@ html, body {
     justify-content: center;
     padding-bottom: 10px;
   }
+  /* Add space above visualizations so scrolling looks natural */
+#visualizations-section {
+  padding-top: 50px;
+}
 }
 
 </style>

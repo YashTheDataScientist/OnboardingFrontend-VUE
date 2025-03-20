@@ -42,14 +42,21 @@
 
 
 import { createRouter, createWebHistory } from 'vue-router';
+import Intro from '@/views/Intro.vue';
 import HomeView from '@/views/HomeView.vue';
 
 const routes = [
-  { path: '/', name: 'Home', component: HomeView },
+  { path: '/', name: 'Landing', component: Intro  },
+  { path: '/home', name: 'Home', component: HomeView },
+
   // { path: '/recommendations', name: 'Recommendations', component: () => import('@/views/Recommendations.vue') },
   { path: '/reminders', name: 'Reminders', component: () => import('@/views/RemindPage.vue') },
-  { path: '/plan', name: 'PlanTrip', component: () => import('@/views/PlanPage.vue') }
-  // { path: '/about', name: 'About', component: () => import('@/views/AboutPage.vue') },
+  { path: '/plan', name: 'PlanTrip', component: () => import('@/views/PlanPage.vue') },
+  { path: '/test', name: 'PlanTrip1', component: () => import('@/views/UVTest.vue') },
+  { path: '/vizualisations', component: () => import('@/views/Vizualisations.vue') },
+  { path: '/safety', component: () => import('@/views/SunSafety.vue') },
+  { path: '/about', name: 'About', component: () => import('@/views/AboutUs.vue') }
+  // { path: '/intro', name: 'About', component: () => import('@/views/Intro.vue') }
 ];
 
 const router = createRouter({
