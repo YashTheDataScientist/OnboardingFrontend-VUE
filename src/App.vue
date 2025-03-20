@@ -1,84 +1,116 @@
-/* App.vue */
 <template>
   <div class="app-container">
-    <header class="global-header">
-      <img 
-        src="/images/logo.png" 
-        class="header-logo"
-        alt="Sun Safety Logo"
-      >
-      <router-link 
-        to="/" 
-        class="home-link"
-        v-if="$route.path !== '/'"
-      >
-        ← Back to Home
-      </router-link>
-      <h1 class="app-title">Sun Safety Guard</h1>
-    </header>
+    <nav class="navbar">
+      <div class="logo-container">
+        <img src="@/assets/logo.png" alt="SPF Society Logo" class="logo" />
+        <h1 class="site-title">SPF Society</h1>
+      </div>
+      <ul>
+        <li><router-link to="/" class="nav-link">Home</router-link></li>
+        <li><router-link to="/recommendations" class="nav-link">Sun Safety Tips</router-link></li>
+        <li><router-link to="/reminders" class="nav-link">Sunscreen Alerts</router-link></li>
+        <li><router-link to="/plan" class="nav-link">UV Travel Guide</router-link></li>
+        <li><router-link to="/about" class="nav-link">About Us</router-link></li>
+      </ul>
+    </nav>
 
-
-    <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" />
-      </transition>
-    </router-view>
+    <main class="main-content">
+      <router-view></router-view> <!-- ✅ Ensures content renders correctly -->
+    </main>
   </div>
 </template>
 
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-.header-logo {
-  height: 40px; /* 根据实际图片比例调整 */
-  margin-right: 1.0rem;
-  transition: transform 0.3s ease;
+<style scoped>
+html, body {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  
+  height: 100vh;
+  background-color: black; /* Ensures full coverage */
 }
 
-.header-logo:hover {
-  transform: scale(1.05);
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  
 }
-.global-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: #4299e1;
-  color: white;
-  padding: 1rem 2rem;
+
+.main-content {
+  flex-grow: 1;
+  margin: 0;
+}
+
+/* Navbar Styles */
+.navbar {
+  width: 100%;
+  background: rgba(33, 32, 32, 0.3); /* ✅ More transparency */
+  backdrop-filter: blur(10px); /* ✅ Slight blur for a sleek effect */
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 1000;
+  justify-content: space-between;
+  padding: 12px 20px;
 }
 
-.home-link {
+.logo-container {
+  display: flex;
+  margin-left: 70px;
+  align-items: center;
+  gap: 12px; /* Space between logo and title */
+  min-width: 180px; /* ✅ Ensures the logo section doesn’t shrink */
+}
+
+.logo {
+  width: 45px;
+}
+
+.site-title {
+  font-size: 20px;
+  font-weight: bold;
   color: white;
-  text-decoration: none;
-  font-weight: 500;
-  margin-right: 2rem;
-  transition: opacity 0.2s;
-}
-
-.home-link:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-}
-
-.app-title {
   margin: 0;
-  font-size: 1.4rem;
 }
 
-.router-view {
-  margin-top: 70px;
+/* Navigation Styles */
+.navbar ul {
+  list-style: none;
+  display: flex;
+  align-items: center; /* ✅ Center nav items properly */
+  gap: 100px;
+  margin: 0;
+  
+  padding: 0;
 }
 
+.nav-link {
+  font-size: 14px;
+  text-decoration: none;
+  color: white;
+  position: relative;
+  transition: color 0.3s;
+}
 
+/* Underline Animation */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-link:hover::after,
+.router-link-active::after {
+  width: 100%;
+}
+
+/* Ensure Main Content Takes Up Space */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+}
 </style>

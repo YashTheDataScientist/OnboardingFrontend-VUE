@@ -224,6 +224,8 @@ import CancerTrendsChart from "@/components/CancerTrendsChart.vue";
 
 
 <style scoped>
+
+
 .home-page {
   background-image: url('/images/background.png');
   background-repeat: no-repeat; 
