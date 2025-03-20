@@ -2,7 +2,7 @@
   <div class="app-container">
     <nav class="navbar">
       <div class="logo-container">
-        <img src="@/assets/logo.png" alt="SPF Society Logo" class="logo" />
+        <img src="/images/Logo1.png"  alt="SPF Society Logo" class="logo" />
         <h1 class="site-title">SPF Society</h1>
       </div>
       <ul>

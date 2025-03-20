@@ -1,6 +1,6 @@
 <template>
     <div class="landing-container">
-      <img src="@/assets/logo.png" class="bouncing-logo" alt="SPF Society Logo" @click="goToHome" />
+      <img src="/images/Logo1.png" class="bouncing-logo" alt="SPF Society Logo" @click="goToHome" />
     </div>
   </template>
   
